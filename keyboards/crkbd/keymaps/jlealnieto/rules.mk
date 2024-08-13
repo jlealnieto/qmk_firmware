@@ -4,4 +4,7 @@ LTO_ENABLE      	= yes
 OLED_ENABLE 		= yes  
 RGBLIGHT_ENABLE 	= no
 RGB_MATRIX_ENABLE 	= yes
+EXTRAKEY_ENABLE 	= yes
+CONSOLE_ENABLE		= no         # Console for debug
+COMMAND_ENABLE 		= no
 # TAP_DANCE_ENABLE 	= yes
