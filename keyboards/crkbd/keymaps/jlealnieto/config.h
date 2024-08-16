@@ -24,10 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* Select hand configuration */
 
-#define MASTER_LEFT
+#define MASTER_RIGHT
 
-#define TAPPING_TERM 200
-#define TAPPING_TOGGLE 3
+#define TAPPING_TERM 175
+#define TAPPING_TOGGLE 1
 
 // #define MASTER_RIGHT
 // #define EE_HANDS
