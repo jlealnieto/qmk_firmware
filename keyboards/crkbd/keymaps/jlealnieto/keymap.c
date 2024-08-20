@@ -63,7 +63,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
      KC_LCTL, KC_MPRV, KC_MNXT, KC_MUTE, KC_VOLD, KC_VOLU,                      XXXXXXX, KC_END,  KC_HOME, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+----------+--------+--------+-------+--------+--------|
-                                         KC_LALT, _______,  KC_SPC,	  	MO(3),  KC_RGUI,  KC_RALT
+                                         KC_LALT, _______,  KC_SPC,    MO(3),  KC_RGUI,  KC_RALT
                                       //`--------+--------+--------'  `--------+----------+--------'
   ),
 
@@ -96,6 +96,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 // Rotate OLED
 	oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+
+
 			return OLED_ROTATION_270;
 	}
 	
