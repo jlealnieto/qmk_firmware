@@ -93,28 +93,54 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-    for (uint8_t i = led_min; i < led_max; i++) {
-        switch(get_highest_layer(layer_state|default_layer_state)) {
-            case 2:
-                rgb_matrix_set_color(i, RGB_BLUE);
-                break;
-            case 1:
-                rgb_matrix_set_color(i, RGB_YELLOW);
-                break;
-            default:
-                break;
-        }
-    }
+
+      for (uint8_t i = led_min; i < led_max; i++) {
+
+         if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
+
+         switch(get_highest_layer(layer_state)) {
+               case _NUMBERS:
+                  rgb_matrix_set_color(i, RGB_PINK);
+                  break;
+               case _SYMBOLS:
+                  rgb_matrix_set_color(i, RGB_BLUE);
+                  break;
+                  case  _FUNCTIONS:
+                     rgb_matrix_set_color(i, RGB_CYAN);
+                     break;
+                  default:
+                  
+                     if (host_keyboard_led_state().caps_lock) {
+
+                        rgb_matrix_set_color(i, RGB_RED);
+                  }
+                  break;
+         }
+       }
+      }
+
     return false;
 }
 
-/* #ifdef OLED_ENABLE
+// bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+//     if (host_keyboard_led_state().caps_lock) {
+//         for (uint8_t i = led_min; i < led_max; i++) {
+//             if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
+//                 rgb_matrix_set_color(i, RGB_RED);
+//             }
+//         }
+//       } 
+   
+//     return false;
+// }
 
-// Rotate OLED
+ #ifdef OLED_ENABLE
+
+//  Rotate OLED
 	oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 
 
-			return OLED_ROTATION_270;
+			return OLED_ROTATION_180;
 	}
 	
 	bool oled_task_user(void) {
@@ -123,13 +149,13 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
     switch (get_highest_layer(layer_state)) {
         case _BASE:
-            oled_write_P(PSTR("Default\n"), false);
+            oled_write_P(PSTR("BASE\n"), false);
             break;
         case _NUMBERS:
-            oled_write_P(PSTR("FN\n"), false);
+            oled_write_P(PSTR("NUMBERS\n"), false);
             break;
         case _SYMBOLS:
-            oled_write_P(PSTR("ADJ\n"), false);
+            oled_write_P(PSTR("SYMBOLS\n"), false);
             break;
         default:
             // Or use the write_ln shortcut over adding '\n' to the end of your string
@@ -144,4 +170,4 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     
     return false;
 }
-#endif */
+#endif 

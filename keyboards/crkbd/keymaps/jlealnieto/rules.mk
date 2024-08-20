@@ -8,4 +8,8 @@ EXTRAKEY_ENABLE			= yes
 CONSOLE_ENABLE		    = no         # Console for debug
 COMMAND_ENABLE			= no
 TAP_DANCE_ENABLE		= yes
+SPLIT_KEYBOARD			= yes
 #RGB_MATRIX_CUSTOM_USER  = yes
+SRC +=  ./lib/rgb_state_reader.c \
+        ./lib/layer_state_reader.c \
+        # ./lib/keylogger.c \
