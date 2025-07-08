@@ -93,41 +93,38 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-    // Only update if layer actually changed to improve performance
     static uint8_t last_layer = 255;
     uint8_t current_layer = get_highest_layer(layer_state);
 
-    // Force update on first run or layer change
+    // Handle layer changes
     if (current_layer != last_layer) {
-        for (uint8_t i = led_min; i < led_max; i++) {
-            if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
-                switch(current_layer) {
-                    case _NUMBERS:
-                        rgb_matrix_set_color(i, RGB_PINK);
-                        break;
-                    case _SYMBOLS:
-                        rgb_matrix_set_color(i, RGB_BLUE);
-                        break;
-                    case _FUNCTIONS:
-                        rgb_matrix_set_color(i, RGB_CYAN);
-                        break;
-                    default:
-                        if (host_keyboard_led_state().caps_lock) {
-                            rgb_matrix_set_color(i, RGB_RED);
-                        }
-                        // If no special layer and no caps lock, let default RGB effect show
-                        break;
-                }
-            }
+        switch(current_layer) {
+            case _NUMBERS:
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+                rgb_matrix_sethsv_noeeprom(HSV_PINK);
+                break;
+            case _SYMBOLS:
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+                rgb_matrix_sethsv_noeeprom(HSV_BLUE);
+                break;
+            case _FUNCTIONS:
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+                rgb_matrix_sethsv_noeeprom(HSV_CYAN);
+                break;
+            case _BASE:
+            default:
+                // Return to your preferred RGB effect for base layer
+                rgb_matrix_mode_noeeprom(RGB_MATRIX_TYPING_HEATMAP); // or whatever effect you prefer
+                break;
         }
         last_layer = current_layer;
-    } else {
-        // Even if layer hasn't changed, still need to handle caps lock on base layer
-        if (current_layer == _BASE && host_keyboard_led_state().caps_lock) {
-            for (uint8_t i = led_min; i < led_max; i++) {
-                if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
-                    rgb_matrix_set_color(i, RGB_RED);
-                }
+    }
+
+    // Handle caps lock on base layer only
+    if (current_layer == _BASE && host_keyboard_led_state().caps_lock) {
+        for (uint8_t i = led_min; i < led_max; i++) {
+            if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
+                rgb_matrix_set_color(i, RGB_RED);
             }
         }
     }
