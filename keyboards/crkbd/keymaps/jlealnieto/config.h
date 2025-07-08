@@ -29,9 +29,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SPLIT_LAYER_STATE_ENABLE
 #define SPLIT_LED_STATE_ENABLE
 #define SPLIT_MODS_ENABLE
-#define RGBLIGHT_LIMIT_VAL 120 
+#define RGBLIGHT_LIMIT_VAL 120
 #define FORCED_SYNC_THROTTLE_MS 100
 #define SPLIT_MAX_CONNECTION_ERRORS 10
+//Claude optimizations
+#define RGB_MATRIX_LED_PROCESS_LIMIT 20
+#define RGB_MATRIX_TIMEOUT 300000
+#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 150
+#define OLED_UPDATE_INTERVAL 50
 
 
 #define TAPPING_TERM 200
@@ -69,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #  define RGB_MATRIX_FRAMEBUFFER_EFFECTS
 #  define RGB_MATRIX_LED_PROCESS_LIMIT (RGB_MATRIX_LED_COUNT + 4) / 5 // limits the number of LEDs to process in an animation per task run (increases keyboard responsiveness)
 #  define RGB_MATRIX_LED_FLUSH_LIMIT 16 // limits in milliseconds how frequently an animation will update the LEDs. 16 (16ms) is equivalent to limiting to 60fps (increases keyboard responsiveness)
-#  define RGB_MATRIX_MAXIMUM_BRIGHTNESS 120 // limits maximum brightness of LEDs to 150 out of 255. Higher may cause the controller to crash. 
+#  define RGB_MATRIX_MAXIMUM_BRIGHTNESS 120 // limits maximum brightness of LEDs to 150 out of 255. Higher may cause the controller to crash.
 #  define RGB_MATRIX_HUE_STEP 8
 #  define RGB_MATRIX_SAT_STEP 8
 #  define RGB_MATRIX_VAL_STEP 8

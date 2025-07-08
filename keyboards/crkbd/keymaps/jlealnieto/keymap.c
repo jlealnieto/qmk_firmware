@@ -28,7 +28,7 @@ enum layer_number {
 };
 
 //tap dance declarations
-enum 
+enum
 {
 	TD_ESC_TAB,
 	TD_SF_MAY,
@@ -36,9 +36,9 @@ enum
 
 //tap dance definitions
 tap_dance_action_t tap_dance_actions[] = {
-	
+
 		[TD_ESC_TAB] = ACTION_TAP_DANCE_DOUBLE(KC_TAB, KC_ESC),
-		[TD_SF_MAY]  = ACTION_TAP_DANCE_DOUBLE(KC_LSFT,KC_CAPS),
+		[TD_SF_MAY]  = ACTION_TAP_DANCE_DOUBLE(KC_LSFT,KC_CAPS)
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -50,7 +50,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
      KC_LCTL,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                        KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ESC,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+---------+--------+--------+--------+--------+--------|
-                                          KC_LALT,  TT(1),  KC_SPC,     KC_LT2,  KC_RGUI, KC_RALT
+                                          KC_LALT,  TT(1),  LGUI_T(KC_SPC),     KC_LT2,  KC_RGUI, KC_RALT
                                       //`--------------------------'  `---------------------------'
 
   ),
@@ -109,7 +109,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                      rgb_matrix_set_color(i, RGB_CYAN);
                      break;
                   default:
-                  
+
                      if (host_keyboard_led_state().caps_lock) {
 
                         rgb_matrix_set_color(i, RGB_RED);
@@ -129,8 +129,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 //                 rgb_matrix_set_color(i, RGB_RED);
 //             }
 //         }
-//       } 
-   
+//       }
+
 //     return false;
 // }
 
@@ -142,7 +142,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
 			return OLED_ROTATION_180;
 	}
-	
+
 	bool oled_task_user(void) {
     // Host Keyboard Layer Status
     oled_write_P(PSTR("Layer: "), false);
@@ -167,7 +167,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
     oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
     oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
-    
+
     return false;
 }
-#endif 
+#endif
