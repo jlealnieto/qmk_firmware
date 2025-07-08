@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include QMK_KEYBOARD_H
 
 #define KC_LT2 LT(2,KC_ENTER)
+#define KC_LT1 LT(1,KC_SPC)
 
 enum layer_number {
   _BASE = 0,
@@ -28,15 +29,15 @@ enum layer_number {
 };
 
 //tap dance declarations
-enum 
+enum
 {
 	TD_ESC_TAB,
-	TD_SF_MAY,
+	TD_SF_MAY
 };
 
 //tap dance definitions
 tap_dance_action_t tap_dance_actions[] = {
-	
+
 		[TD_ESC_TAB] = ACTION_TAP_DANCE_DOUBLE(KC_TAB, KC_ESC),
 		[TD_SF_MAY]  = ACTION_TAP_DANCE_DOUBLE(KC_LSFT,KC_CAPS),
 };
@@ -48,9 +49,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
      TD(TD_SF_MAY), KC_A, KC_S, KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-     KC_LCTL,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                        KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ESC,
+     KC_LCTL,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                        KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_GRAVE,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+---------+--------+--------+--------+--------+--------|
-                                          KC_LALT,  TT(1),  KC_SPC,     KC_LT2,  KC_RGUI, KC_RALT
+                                          KC_LGUI, KC_LALT, KC_LT1,     KC_LT2,  KC_RALT, KC_RGUI
                                       //`--------------------------'  `---------------------------'
 
   ),
@@ -63,7 +64,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
      KC_LCTL, KC_MPRV, KC_MNXT, KC_MUTE, KC_VOLD, KC_VOLU,                      XXXXXXX, KC_END,  KC_HOME, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+----------+--------+--------+-------+--------+--------|
-                                         KC_LALT, _______,  KC_SPC,    MO(3),  KC_RGUI,  KC_RALT
+                                         KC_LGUI, KC_LALT,  _______,    MO(3),  KC_RALT,  KC_RALT
                                       //`--------+--------+--------'  `--------+----------+--------'
   ),
 
@@ -75,7 +76,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
      KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                        KC_UNDS,  KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE, KC_TILD,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LALT, MO(3),  KC_SPC,      _______, KC_RGUI, KC_RALT
+                                          KC_LGUI, MO(3),  KC_SPC,      _______, KC_RALT, KC_RGUI
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -87,7 +88,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
      RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LALT, _______, KC_SPC,     _______, KC_RGUI, KC_RALT
+                                          KC_LGUI, _______, KC_SPC,     _______, KC_RALT, KC_RGUI
                                       //`--------------------------'  `--------------------------'
   )
 };
@@ -109,7 +110,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                      rgb_matrix_set_color(i, RGB_CYAN);
                      break;
                   default:
-                  
+
                      if (host_keyboard_led_state().caps_lock) {
 
                         rgb_matrix_set_color(i, RGB_RED);
@@ -122,19 +123,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     return false;
 }
 
-// bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-//     if (host_keyboard_led_state().caps_lock) {
-//         for (uint8_t i = led_min; i < led_max; i++) {
-//             if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
-//                 rgb_matrix_set_color(i, RGB_RED);
-//             }
-//         }
-//       } 
-   
-//     return false;
-// }
-
- #ifdef OLED_ENABLE
+#ifdef OLED_ENABLE
 
 //  Rotate OLED
 	oled_rotation_t oled_init_user(oled_rotation_t rotation) {
@@ -142,7 +131,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
 			return OLED_ROTATION_180;
 	}
-	
+
 	bool oled_task_user(void) {
     // Host Keyboard Layer Status
     oled_write_P(PSTR("Layer: "), false);
@@ -167,7 +156,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
     oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
     oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
-    
+
     return false;
 }
-#endif 
+#endif
