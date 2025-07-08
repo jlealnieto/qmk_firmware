@@ -50,7 +50,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
      KC_LCTL,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                        KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ESC,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+---------+--------+--------+--------+--------+--------|
-                                          KC_LALT,  TT(1),  LGUI_T(KC_SPC),     KC_LT2,  KC_RGUI, KC_RALT
+                                          KC_LALT, TT(1),LGUI_T(KC_SPC),     KC_LT2,  KC_RGUI, KC_RALT
                                       //`--------------------------'  `---------------------------'
 
   ),
@@ -93,46 +93,47 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    // Only update if layer actually changed to improve performance
+    static uint8_t last_layer = 255;
+    uint8_t current_layer = get_highest_layer(layer_state);
 
-      for (uint8_t i = led_min; i < led_max; i++) {
-
-         if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
-
-         switch(get_highest_layer(layer_state)) {
-               case _NUMBERS:
-                  rgb_matrix_set_color(i, RGB_PINK);
-                  break;
-               case _SYMBOLS:
-                  rgb_matrix_set_color(i, RGB_BLUE);
-                  break;
-                  case  _FUNCTIONS:
-                     rgb_matrix_set_color(i, RGB_CYAN);
-                     break;
-                  default:
-
-                     if (host_keyboard_led_state().caps_lock) {
-
-                        rgb_matrix_set_color(i, RGB_RED);
-                  }
-                  break;
-         }
-       }
-      }
+    // Force update on first run or layer change
+    if (current_layer != last_layer) {
+        for (uint8_t i = led_min; i < led_max; i++) {
+            if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
+                switch(current_layer) {
+                    case _NUMBERS:
+                        rgb_matrix_set_color(i, RGB_PINK);
+                        break;
+                    case _SYMBOLS:
+                        rgb_matrix_set_color(i, RGB_BLUE);
+                        break;
+                    case _FUNCTIONS:
+                        rgb_matrix_set_color(i, RGB_CYAN);
+                        break;
+                    default:
+                        if (host_keyboard_led_state().caps_lock) {
+                            rgb_matrix_set_color(i, RGB_RED);
+                        }
+                        // If no special layer and no caps lock, let default RGB effect show
+                        break;
+                }
+            }
+        }
+        last_layer = current_layer;
+    } else {
+        // Even if layer hasn't changed, still need to handle caps lock on base layer
+        if (current_layer == _BASE && host_keyboard_led_state().caps_lock) {
+            for (uint8_t i = led_min; i < led_max; i++) {
+                if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
+                    rgb_matrix_set_color(i, RGB_RED);
+                }
+            }
+        }
+    }
 
     return false;
 }
-
-// bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-//     if (host_keyboard_led_state().caps_lock) {
-//         for (uint8_t i = led_min; i < led_max; i++) {
-//             if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
-//                 rgb_matrix_set_color(i, RGB_RED);
-//             }
-//         }
-//       }
-
-//     return false;
-// }
 
  #ifdef OLED_ENABLE
 
@@ -144,30 +145,34 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 	}
 
 	bool oled_task_user(void) {
-    // Host Keyboard Layer Status
-    oled_write_P(PSTR("Layer: "), false);
+    // Only update on master side (usually right side with MASTER_RIGHT)
+    if (is_keyboard_master()) {
+        // Host Keyboard Layer Status
+        oled_write_P(PSTR("Layer: "), false);
 
-    switch (get_highest_layer(layer_state)) {
-        case _BASE:
-            oled_write_P(PSTR("BASE\n"), false);
-            break;
-        case _NUMBERS:
-            oled_write_P(PSTR("NUMBERS\n"), false);
-            break;
-        case _SYMBOLS:
-            oled_write_P(PSTR("SYMBOLS\n"), false);
-            break;
-        default:
-            // Or use the write_ln shortcut over adding '\n' to the end of your string
-            oled_write_ln_P(PSTR("Undefined"), false);
+        switch (get_highest_layer(layer_state)) {
+            case _BASE:
+                oled_write_P(PSTR("BASE\n"), false);
+                break;
+            case _NUMBERS:
+                oled_write_P(PSTR("NUMBERS\n"), false);
+                break;
+            case _SYMBOLS:
+                oled_write_P(PSTR("SYMBOLS\n"), false);
+                break;
+            case _FUNCTIONS:
+                oled_write_P(PSTR("FUNCTIONS\n"), false);
+                break;
+            default:
+                oled_write_ln_P(PSTR("Undefined"), false);
+        }
+
+        // Host Keyboard LED Status
+        led_t led_state = host_keyboard_led_state();
+        oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
+        oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
+        oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
     }
-
-    // Host Keyboard LED Status
-    led_t led_state = host_keyboard_led_state();
-    oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
-    oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
-    oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
-
     return false;
 }
 #endif
