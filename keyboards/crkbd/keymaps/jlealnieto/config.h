@@ -76,13 +76,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #  define RGB_MATRIX_SPD_STEP 10
 // #  define ENABLE_RGB_MATRIX_RAINDROPS
 // #  define ENABLE_RGB_MATRIX_JELLYBEAN_RAINDROPS
-// #  define ENABLE_RGB_MATRIX_ALPHAS_MODS
+#  define ENABLE_RGB_MATRIX_ALPHAS_MODS
 // #  define ENABLE_RGB_MATRIX_PIXEL_RAIN
-// #  define ENABLE_RGB_MATRIX_PIXEL_FLOW
+#  define ENABLE_RGB_MATRIX_PIXEL_FLOW
 // #  define ENABLE_RGB_MATRIX_PIXEL_FRACTAL
 // #  define ENABLE_RGB_MATRIX_TYPING_HEATMAP
 // #  define ENABLE_RGB_MATRIX_DIGITAL_RAIN
-// #  define ENABLE_RGB_MATRIX_GRADIENT_UP_DOWN
+#  define ENABLE_RGB_MATRIX_GRADIENT_UP_DOWN
 /* Enable the animations you want/need.  You may need to enable only a small number of these because       *
  * they take up a lot of space.  Enable and confirm that you can still successfully compile your firmware. */
 // RGB Matrix Animation modes. Explicitly enabled
