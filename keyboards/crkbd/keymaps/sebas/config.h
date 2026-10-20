@@ -15,8 +15,8 @@
 // Escribiendo rápido (<150 ms desde la tecla anterior), Space siempre es espacio y nunca activa NUM
 #define FLOW_TAP_TERM 150
 
-// --- Caps Word: tocar ambos Shift ---
-#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
+// --- Caps Word: doble toque de Shift (solo hay un Shift en la capa base) ---
+#define DOUBLE_TAP_SHIFT_TURNS_ON_CAPS_WORD
 
 // --- Split: la mitad derecha necesita capa, LEDs del host y mods para pintar RGB/OLED ---
 #define SPLIT_LAYER_STATE_ENABLE
