@@ -19,6 +19,8 @@ enum custom_keycodes {
     DK_CIRC,
     // Caps Lock con pulsación larga: macOS ignora toques muy cortos de Caps Lock
     CAPS_LK,
+    // Alfred está configurado con doble toque de Cmd
+    ALFRED,
     // Prende/apaga el tema EVA-01 de la capa base (apagado = efecto normal de RGB Matrix)
     EVA_TOG,
 };
@@ -44,6 +46,11 @@ enum custom_keycodes {
 #define WM_GROW A(KC_EQL)
 #define WM_TERM A(S(KC_ENT))
 
+// Apps: 1Password (Quick Access y autocompletar en el navegador) y el selector de emojis de macOS
+#define OP_QUICK A(G(KC_BSLS))
+#define OP_FILL G(KC_BSLS)
+#define EMOJI C(G(KC_SPC))
+
 // Zoom de la app activa (Chrome, kitty, etc.)
 #define ZM_OUT G(KC_MINS)
 #define ZM_IN G(KC_EQL)
@@ -62,9 +69,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                    KC_LGUI, WM,      SPC_NUM,      ENT_SYM, KC_LALT, KC_BSPC
     ),
     [_WM] = LAYOUT_split_3x6_3(
-        WS_BACK, WM_RSZ,  WM_TILE, WM_UP,   WM_ACCO, WM_TERM,      XXXXXXX, WS(KC_7),WS(KC_8),WS(KC_9),WS(KC_0),WS_HI(KC_F3),
-        KC_LCTL, XXXXXXX, WM_LEFT, WM_DOWN, WM_RGHT, WM_FLT,       XXXXXXX, WS(KC_4),WS(KC_5),WS(KC_6),WS_HI(KC_F1),WS_HI(KC_F4),
-        KC_LSFT, WM_SHRK, WM_GROW, ZM_OUT,  ZM_IN,   ZM_RST,       XXXXXXX, WS(KC_1),WS(KC_2),WS(KC_3),WS_HI(KC_F2),WS_HI(KC_F5),
+        WS_BACK, WM_RSZ,  WM_TILE, WM_UP,   WM_ACCO, WM_TERM,      OP_QUICK,WS(KC_7),WS(KC_8),WS(KC_9),WS(KC_0),WS_HI(KC_F3),
+        KC_LCTL, OP_FILL, WM_LEFT, WM_DOWN, WM_RGHT, WM_FLT,       ALFRED,  WS(KC_4),WS(KC_5),WS(KC_6),WS_HI(KC_F1),WS_HI(KC_F4),
+        KC_LSFT, WM_SHRK, WM_GROW, ZM_OUT,  ZM_IN,   ZM_RST,       EMOJI,   WS(KC_1),WS(KC_2),WS(KC_3),WS_HI(KC_F2),WS_HI(KC_F5),
                                    XXXXXXX, _______, XXXXXXX,      XXXXXXX, XXXXXXX, XXXXXXX
     ),
     [_NUM] = LAYOUT_split_3x6_3(
@@ -127,6 +134,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case DK_TILD: tap_code16(KC_TILD); tap_code(KC_SPC); return false;
         case DK_CIRC: tap_code16(KC_CIRC); tap_code(KC_SPC); return false;
         case CAPS_LK: tap_code_delay(KC_CAPS, 150); return false;
+        case ALFRED:
+            tap_code(KC_LGUI);
+            wait_ms(40);
+            tap_code(KC_LGUI);
+            return false;
         case EVA_TOG: eva_theme = !eva_theme; return false;
     }
     return true;
@@ -189,11 +201,13 @@ static bool key_color(uint8_t layer, uint16_t kc, uint8_t led_flags, uint8_t *hu
     }
     switch (layer) {
         case _WM:
-            // Workspaces en azul, zoom en amarillo, acciones de ventana en blanco
+            // Workspaces en azul, zoom en amarillo, apps en rosa, acciones de ventana en blanco
             if ((kc >= WS(KC_1) && kc <= WS(KC_0)) || (kc >= WS_HI(KC_F1) && kc <= WS_HI(KC_F5))) {
                 *hue = HUE_BLUE;
             } else if (kc == ZM_OUT || kc == ZM_IN || kc == ZM_RST) {
                 *hue = HUE_YELLOW;
+            } else if (kc == OP_QUICK || kc == OP_FILL || kc == EMOJI || kc == ALFRED) {
+                *hue = HUE_PINK;
             } else {
                 *hue = 0;
                 *sat = WHITE_SAT;
