@@ -6,7 +6,7 @@
 // sirve para sincronizar Caps Word con la mitad derecha (el estado de capas sí se sincroniza).
 
 #include QMK_KEYBOARD_H
-#include "gengar_logo.h"
+#include "haunter_logo.h"
 
 enum layers { _BASE, _WM, _NUM, _SYM, _ADJ, _CAPS };
 
@@ -64,7 +64,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_WM] = LAYOUT_split_3x6_3(
         WS_BACK, WM_RSZ,  WM_TILE, WM_UP,   WM_ACCO, WM_TERM,      XXXXXXX, WS(KC_7),WS(KC_8),WS(KC_9),WS(KC_0),WS_HI(KC_F3),
         KC_LCTL, XXXXXXX, WM_LEFT, WM_DOWN, WM_RGHT, WM_FLT,       XXXXXXX, WS(KC_4),WS(KC_5),WS(KC_6),WS_HI(KC_F1),WS_HI(KC_F4),
-        KC_LSFT, ZM_OUT,  ZM_IN,   ZM_RST,  WM_SHRK, WM_GROW,      XXXXXXX, WS(KC_1),WS(KC_2),WS(KC_3),WS_HI(KC_F2),WS_HI(KC_F5),
+        KC_LSFT, WM_SHRK, WM_GROW, ZM_OUT,  ZM_IN,   ZM_RST,       XXXXXXX, WS(KC_1),WS(KC_2),WS(KC_3),WS_HI(KC_F2),WS_HI(KC_F5),
                                    XXXXXXX, _______, XXXXXXX,      XXXXXXX, XXXXXXX, XXXXXXX
     ),
     [_NUM] = LAYOUT_split_3x6_3(
@@ -280,8 +280,10 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
 // --------------------------------------------------------------- OLED ---
 
+// Izquierda vertical (estado); derecha horizontal para que Haunter entre más grande.
+// La mitad derecha va montada al revés, por eso 180 y no 0
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-    return OLED_ROTATION_270;
+    return is_keyboard_master() ? OLED_ROTATION_270 : OLED_ROTATION_180;
 }
 
 static void render_line(uint8_t line, const char *text, bool inverted) {
@@ -316,12 +318,26 @@ static void render_status(void) {
     oled_write(get_u8_str(get_current_wpm(), ' '), false);
 }
 
-// Mitad derecha: Gengar + número de Pokédex
+// Mitad derecha (128x32): Haunter a la izquierda, datos de Pokédex y capa actual a la derecha
 static void render_logo(void) {
-    oled_write_raw_P(gengar_logo, sizeof(gengar_logo));
-    render_line(5, PSTR("-----"), false);
-    render_line(7, PSTR(" #094"), false);
-    render_line(9, PSTR("GHOST"), false);
+    for (uint8_t page = 0; page < 4; page++) {
+        for (uint8_t x = 0; x < HAUNTER_WIDTH; x++) {
+            oled_write_raw_byte(pgm_read_byte(&haunter_logo[page * HAUNTER_WIDTH + x]), page * OLED_DISPLAY_WIDTH + x);
+        }
+    }
+    // Columna 8 = 48 px, deja aire después del sprite
+    oled_set_cursor(8, 0);
+    oled_write_P(PSTR("HAUNTER"), false);
+    oled_set_cursor(8, 1);
+    oled_write_P(PSTR("#093 GHOST"), false);
+    oled_set_cursor(8, 3);
+    switch (current_layer()) {
+        case _WM:  oled_write_P(PSTR(" WM  "), true); break;
+        case _NUM: oled_write_P(PSTR(" NUM "), true); break;
+        case _SYM: oled_write_P(PSTR(" SYM "), true); break;
+        case _ADJ: oled_write_P(PSTR(" ADJ "), true); break;
+        default:   oled_write_P(PSTR("     "), false); break;
+    }
 }
 
 bool oled_task_user(void) {
