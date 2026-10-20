@@ -1,51 +1,44 @@
-/*
-This is the c configuration file for the keymap
-
-Copyright 2012 Jun Wako <wakojun@gmail.com>
-Copyright 2015 Jack Humbert
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright 2026 Sebastian Leal (@jlealnieto)
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
-//#define USE_MATRIX_I2C
-
-/* Select hand configuration */
-
+// El cable USB va a la mitad izquierda
 #define MASTER_LEFT
-// #define MASTER_RIGHT
-// #define EE_HANDS
 
-//#define QUICK_TAP_TERM 0
-//#define TAPPING_TERM 100
+// --- Tap-hold (Space = NUM, Enter = SYM) ---
+#define TAPPING_TERM 200
+// Si se presiona y suelta otra tecla mientras Space/Enter siguen abajo, cuenta como capa aunque no pasen 200 ms
+#define PERMISSIVE_HOLD
+// Sin auto-repeat al tap+hold: mantener siempre activa la capa
+#define QUICK_TAP_TERM 0
+// Escribiendo rápido (<150 ms desde la tecla anterior), Space siempre es espacio y nunca activa NUM
+#define FLOW_TAP_TERM 150
 
-#ifdef RGBLIGHT_ENABLE
-    #define RGBLIGHT_EFFECT_BREATHING
-    #define RGBLIGHT_EFFECT_RAINBOW_MOOD
-    #define RGBLIGHT_EFFECT_RAINBOW_SWIRL
-    #define RGBLIGHT_EFFECT_SNAKE
-    #define RGBLIGHT_EFFECT_KNIGHT
-    #define RGBLIGHT_EFFECT_CHRISTMAS
-    #define RGBLIGHT_EFFECT_STATIC_GRADIENT
-    #define RGBLIGHT_EFFECT_RGB_TEST
-    #define RGBLIGHT_EFFECT_ALTERNATING
-    #define RGBLIGHT_EFFECT_TWINKLE
-    #define RGBLIGHT_LIMIT_VAL 120
-    #define RGBLIGHT_HUE_STEP 10
-    #define RGBLIGHT_SAT_STEP 17
-    #define RGBLIGHT_VAL_STEP 17
-#endif
+// --- Caps Word: tocar ambos Shift ---
+#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
 
-#define OLED_FONT_H "keyboards/crkbd/lib/glcdfont.c"
+// --- Split: la mitad derecha necesita capa, LEDs del host y mods para pintar RGB/OLED ---
+#define SPLIT_LAYER_STATE_ENABLE
+#define SPLIT_LED_STATE_ENABLE
+#define SPLIT_MODS_ENABLE
+#define SPLIT_OLED_ENABLE
+
+// --- RGB Matrix ---
+#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 120
+#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_COLOR
+#define RGB_MATRIX_DEFAULT_VAL 100
+#define RGB_MATRIX_SLEEP
+#define RGB_MATRIX_TIMEOUT 600000
+// Efectos para cuando el tema EVA está apagado (pocos, para cuidar los 28 KB)
+#define ENABLE_RGB_MATRIX_BREATHING
+#define ENABLE_RGB_MATRIX_CYCLE_LEFT_RIGHT
+#define ENABLE_RGB_MATRIX_RAINBOW_MOVING_CHEVRON
+
+// --- OLED ---
+#define OLED_TIMEOUT 600000
+
+// --- Ahorro de memoria ---
+#define LAYER_STATE_8BIT
+#define NO_ACTION_ONESHOT
+#define NO_MUSIC_MODE
