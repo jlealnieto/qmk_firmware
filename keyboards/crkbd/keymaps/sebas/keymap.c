@@ -7,6 +7,7 @@
 
 #include QMK_KEYBOARD_H
 #include "haunter_logo.h"
+#include "raw_hid.h"
 
 enum layers { _BASE, _WM, _NUM, _SYM, _ADJ, _CAPS };
 
@@ -102,6 +103,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // clang-format on
 
 static bool eva_theme = true;
+
+// Workspace de AeroSpace, enviado desde la Mac por Raw HID (~/.local/bin/corne-ws, ver host/corne-ws.c).
+// Formato del reporte: 'W' seguido del nombre del workspace (hasta 5 caracteres, terminado en 0)
+#define WS_NAME_LEN 5
+static char aerospace_ws[WS_NAME_LEN + 1] = "";
+
+void raw_hid_receive(uint8_t *data, uint8_t length) {
+    if (length < 2 || data[0] != 'W') {
+        return;
+    }
+    uint8_t i = 0;
+    for (; i < WS_NAME_LEN && i + 1 < length && data[i + 1]; i++) {
+        aerospace_ws[i] = data[i + 1];
+    }
+    aerospace_ws[i] = 0;
+}
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     return update_tri_layer_state(state, _NUM, _SYM, _ADJ);
@@ -310,8 +327,20 @@ static void render_status(void) {
     uint8_t layer = current_layer();
     uint8_t mods  = get_mods();
 
-    render_line(0, PSTR("CORNE"), false);
-    render_line(1, PSTR("-----"), false);
+    // Workspace de AeroSpace centrado e invertido; "--" hasta que llega el primero
+    render_line(0, PSTR(" WS  "), false);
+    oled_set_cursor(0, 1);
+    uint8_t len = strlen(aerospace_ws);
+    uint8_t pad = len ? (5 - len) / 2 : 1;
+    for (uint8_t i = 0; i < 5; i++) {
+        char c = ' ';
+        if (!len) {
+            c = (i == 1 || i == 2) ? '-' : ' ';
+        } else if (i >= pad && i - pad < len) {
+            c = aerospace_ws[i - pad];
+        }
+        oled_write_char(c, true);
+    }
     switch (layer) {
         case _WM:  render_line(3, PSTR(" WM  "), true); break;
         case _NUM: render_line(3, PSTR(" NUM "), true); break;
@@ -332,14 +361,45 @@ static void render_status(void) {
     oled_write(get_u8_str(get_current_wpm(), ' '), false);
 }
 
-// Mitad derecha (128x32): Haunter a la izquierda, datos de Pokédex y capa actual a la derecha
-static void render_logo(void) {
-    for (uint8_t page = 0; page < 4; page++) {
-        for (uint8_t x = 0; x < HAUNTER_WIDTH; x++) {
-            oled_write_raw_byte(pgm_read_byte(&haunter_logo[page * HAUNTER_WIDTH + x]), page * OLED_DISPLAY_WIDTH + x);
+// Mitad derecha (128x32): Haunter animado a la izquierda, Pokédex y capa actual a la derecha.
+// La animación se calcula en código (sin frames extra): flota 1 px, se balancea 0-3 px y parpadea
+#define HAUNTER_FRAME_MS 120
+#define HAUNTER_AREA 48 // columnas que se redibujan (sprite + balanceo)
+
+static void render_haunter(uint8_t dx, uint8_t dy, bool blink) {
+    for (uint8_t x = 0; x < HAUNTER_AREA; x++) {
+        uint32_t col = 0;
+        if (x >= dx && x - dx < HAUNTER_WIDTH) {
+            uint8_t sx = x - dx;
+            for (uint8_t page = 0; page < 4; page++) {
+                col |= (uint32_t)pgm_read_byte(&haunter_logo[page * HAUNTER_WIDTH + sx]) << (page * 8);
+            }
+            if (blink && sx >= HAUNTER_EYE_X0 && sx < HAUNTER_EYE_X0 + ARRAY_SIZE(haunter_eyes)) {
+                col |= pgm_read_word(&haunter_eyes[sx - HAUNTER_EYE_X0]);
+            }
+            col <<= dy;
+        }
+        for (uint8_t page = 0; page < 4; page++) {
+            oled_write_raw_byte((col >> (page * 8)) & 0xFF, page * OLED_DISPLAY_WIDTH + x);
         }
     }
-    // Columna 8 = 48 px, deja aire después del sprite
+}
+
+static void render_logo(void) {
+    static uint16_t timer = 0;
+    static uint8_t  tick  = 0;
+    static const uint8_t PROGMEM sway[] = {0, 1, 2, 3, 3, 2, 1, 0};
+
+    if (timer_elapsed(timer) >= HAUNTER_FRAME_MS) {
+        timer = timer_read();
+        tick++;
+        uint8_t dx    = pgm_read_byte(&sway[(tick / 3) % ARRAY_SIZE(sway)]);
+        uint8_t dy    = (tick / 6) % 2;
+        bool    blink = (tick % 32) == 0; // ~ cada 4 s, un frame
+        render_haunter(dx, dy, blink);
+    }
+
+    // Columna 8 = 48 px, justo después del área del sprite
     oled_set_cursor(8, 0);
     oled_write_P(PSTR("HAUNTER"), false);
     oled_set_cursor(8, 1);
