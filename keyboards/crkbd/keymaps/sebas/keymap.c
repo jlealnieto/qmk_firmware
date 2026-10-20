@@ -47,8 +47,10 @@ enum custom_keycodes {
 #define WM_GROW A(KC_EQL)
 #define WM_TERM A(S(KC_ENT))
 
-// Apps: 1Password (Quick Access y autocompletar en el navegador) y el selector de emojis de macOS
-#define OP_QUICK A(G(KC_BSLS))
+// Apps: 1Password y el selector de emojis de macOS.
+// Quick Access = Ctrl+Opt+Cmd+P; con Shift físico (Ctrl+Opt+Cmd+Shift+P) = Show 1Password.
+// Los dos se configuran así en 1Password > Settings > General (⌥⌘\ es de Alfred y ⇧⌘Space de Siri)
+#define OP_QUICK C(A(G(KC_P)))
 #define OP_FILL G(KC_BSLS)
 #define EMOJI C(G(KC_SPC))
 
