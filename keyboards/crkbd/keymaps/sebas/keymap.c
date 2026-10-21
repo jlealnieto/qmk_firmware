@@ -7,7 +7,7 @@
 
 #include QMK_KEYBOARD_H
 #include "haunter_logo.h"
-#include "raw_hid.h"
+#include "gastly_logo.h"
 
 enum layers { _BASE, _WM, _NUM, _SYM, _ADJ, _CAPS };
 
@@ -67,26 +67,26 @@ enum custom_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_split_3x6_3(
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,         KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
-        KC_LCTL, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,         KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-        KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,         KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ESC,
+        KC_LSFT, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,         KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+        KC_LCTL, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,         KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ESC,
                                    KC_LGUI, WM,      SPC_NUM,      ENT_SYM, KC_LALT, KC_BSPC
     ),
     [_WM] = LAYOUT_split_3x6_3(
         WS_BACK, WM_RSZ,  WM_TILE, WM_UP,   WM_ACCO, WM_TERM,      OP_QUICK,WS(KC_7),WS(KC_8),WS(KC_9),WS(KC_0),WS_HI(KC_F3),
-        KC_LCTL, OP_FILL, WM_LEFT, WM_DOWN, WM_RGHT, WM_FLT,       ALFRED,  WS(KC_4),WS(KC_5),WS(KC_6),WS_HI(KC_F1),WS_HI(KC_F4),
-        KC_LSFT, WM_SHRK, WM_GROW, ZM_OUT,  ZM_IN,   ZM_RST,       EMOJI,   WS(KC_1),WS(KC_2),WS(KC_3),WS_HI(KC_F2),WS_HI(KC_F5),
+        KC_LSFT, OP_FILL, WM_LEFT, WM_DOWN, WM_RGHT, WM_FLT,       ALFRED,  WS(KC_4),WS(KC_5),WS(KC_6),WS_HI(KC_F1),WS_HI(KC_F4),
+        KC_LCTL, WM_SHRK, WM_GROW, ZM_OUT,  ZM_IN,   ZM_RST,       EMOJI,   WS(KC_1),WS(KC_2),WS(KC_3),WS_HI(KC_F2),WS_HI(KC_F5),
                                    XXXXXXX, _______, XXXXXXX,      XXXXXXX, XXXXXXX, XXXXXXX
     ),
     [_NUM] = LAYOUT_split_3x6_3(
         XXXXXXX, XXXXXXX, LN_HOME, KC_UP,   LN_END,  KC_PGUP,      KC_PLUS, KC_7,    KC_8,    KC_9,    KC_ASTR, KC_BSPC,
-        KC_LCTL, XXXXXXX, KC_LEFT, KC_DOWN, KC_RGHT, KC_PGDN,      KC_MINS, KC_4,    KC_5,    KC_6,    KC_SLSH, XXXXXXX,
-        KC_LSFT, CAPS_LK, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,      KC_0,    KC_1,    KC_2,    KC_3,    KC_DOT,  XXXXXXX,
+        KC_LSFT, XXXXXXX, KC_LEFT, KC_DOWN, KC_RGHT, KC_PGDN,      KC_MINS, KC_4,    KC_5,    KC_6,    KC_SLSH, KC_DEL,
+        KC_LCTL, CAPS_LK, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,      KC_0,    KC_1,    KC_2,    KC_3,    KC_DOT,  XXXXXXX,
                                    _______, _______, _______,      _______, _______, _______
     ),
     [_SYM] = LAYOUT_split_3x6_3(
         KC_TAB,  KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,      DK_CIRC, KC_AMPR, KC_ASTR, KC_MINS, KC_EQL,  KC_BSPC,
-        KC_LCTL, KC_LT,   KC_LCBR, KC_LBRC, KC_LPRN, DK_DQUO,      DK_QUOT, KC_RPRN, KC_RBRC, KC_RCBR, KC_GT,   XXXXXXX,
-        KC_LSFT, DK_GRV,  DK_TILD, KC_BSLS, KC_PIPE, KC_SCLN,      KC_COLN, KC_UNDS, KC_PLUS, KC_QUES, KC_SLSH, XXXXXXX,
+        KC_LSFT, KC_LT,   KC_LCBR, KC_LBRC, KC_LPRN, DK_DQUO,      DK_QUOT, KC_RPRN, KC_RBRC, KC_RCBR, KC_GT,   KC_DEL,
+        KC_LCTL, DK_GRV,  DK_TILD, KC_BSLS, KC_PIPE, KC_SCLN,      KC_COLN, KC_UNDS, KC_PLUS, KC_QUES, KC_SLSH, XXXXXXX,
                                    _______, _______, _______,      _______, _______, _______
     ),
     [_ADJ] = LAYOUT_split_3x6_3(
@@ -105,22 +105,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // clang-format on
 
 static bool eva_theme = true;
-
-// Workspace de AeroSpace, enviado desde la Mac por Raw HID (~/.local/bin/corne-ws, ver host/corne-ws.c).
-// Formato del reporte: 'W' seguido del nombre del workspace (hasta 5 caracteres, terminado en 0)
-#define WS_NAME_LEN 5
-static char aerospace_ws[WS_NAME_LEN + 1] = "";
-
-void raw_hid_receive(uint8_t *data, uint8_t length) {
-    if (length < 2 || data[0] != 'W') {
-        return;
-    }
-    uint8_t i = 0;
-    for (; i < WS_NAME_LEN && i + 1 < length && data[i + 1]; i++) {
-        aerospace_ws[i] = data[i + 1];
-    }
-    aerospace_ws[i] = 0;
-}
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     return update_tri_layer_state(state, _NUM, _SYM, _ADJ);
@@ -324,43 +308,66 @@ static void render_line(uint8_t line, const char *text, bool inverted) {
     oled_write_P(text, inverted);
 }
 
-// Mitad izquierda: capa, mods, Caps y WPM (5 caracteres por línea con la OLED vertical)
+// Mitad izquierda (vertical, 32 px de ancho): Gastly arriba, capa, mods y Caps.
+// El gas de Gastly gira y se espesa según la velocidad de escritura (reemplaza el número de WPM)
+#define GASTLY_IDLE_MS 400
+
+static void render_gastly(void) {
+    static uint16_t timer = 0;
+    static uint8_t  phase = 0;
+    uint8_t         wpm   = get_current_wpm();
+    uint16_t        frame = wpm >= 70 ? 60 : GASTLY_IDLE_MS - wpm * 5;
+
+    if (timer_elapsed(timer) < frame) {
+        return;
+    }
+    timer = timer_read();
+    phase++;
+
+    uint8_t buf[GASTLY_SIZE * 4];
+    memcpy_P(buf, gastly_logo, sizeof(buf));
+    // Quieto: 1 de cada 4 bocanadas; escribiendo rápido: 1 de cada 2
+    uint8_t every = wpm >= 40 ? 2 : 4;
+    for (uint8_t i = 0; i < ARRAY_SIZE(gastly_gas); i++) {
+        if ((i + phase) % every) {
+            continue;
+        }
+        uint8_t x = pgm_read_byte(&gastly_gas[i][0]);
+        uint8_t y = pgm_read_byte(&gastly_gas[i][1]);
+        // Bocanada de 2x2
+        for (uint8_t dx = 0; dx < 2 && x + dx < GASTLY_SIZE; dx++) {
+            for (uint8_t dy = 0; dy < 2 && y + dy < GASTLY_SIZE; dy++) {
+                buf[((y + dy) / 8) * GASTLY_SIZE + x + dx] |= 1 << ((y + dy) % 8);
+            }
+        }
+    }
+    for (uint16_t i = 0; i < sizeof(buf); i++) {
+        oled_write_raw_byte(buf[i], i);
+    }
+}
+
 static void render_status(void) {
     uint8_t layer = current_layer();
     uint8_t mods  = get_mods();
 
-    // Workspace de AeroSpace centrado e invertido; "--" hasta que llega el primero
-    render_line(0, PSTR(" WS  "), false);
-    oled_set_cursor(0, 1);
-    uint8_t len = strlen(aerospace_ws);
-    uint8_t pad = len ? (5 - len) / 2 : 1;
-    for (uint8_t i = 0; i < 5; i++) {
-        char c = ' ';
-        if (!len) {
-            c = (i == 1 || i == 2) ? '-' : ' ';
-        } else if (i >= pad && i - pad < len) {
-            c = aerospace_ws[i - pad];
-        }
-        oled_write_char(c, true);
-    }
+    render_gastly();
+    render_line(4, PSTR("#092 "), false);
+
     switch (layer) {
-        case _WM:  render_line(3, PSTR(" WM  "), true); break;
-        case _NUM: render_line(3, PSTR(" NUM "), true); break;
-        case _SYM: render_line(3, PSTR(" SYM "), true); break;
-        case _ADJ: render_line(3, PSTR(" ADJ "), true); break;
-        default:   render_line(3, PSTR("BASE "), false); break;
+        case _WM:  render_line(6, PSTR(" WM  "), true); break;
+        case _NUM: render_line(6, PSTR(" NUM "), true); break;
+        case _SYM: render_line(6, PSTR(" SYM "), true); break;
+        case _ADJ: render_line(6, PSTR(" ADJ "), true); break;
+        default:   render_line(6, PSTR("BASE "), false); break;
     }
 
-    render_line(6, PSTR(" CMD "), mods & MOD_MASK_GUI);
-    render_line(7, PSTR(" OPT "), mods & MOD_MASK_ALT);
-    render_line(8, PSTR(" SFT "), mods & MOD_MASK_SHIFT);
-    render_line(9, PSTR(" CTL "), mods & MOD_MASK_CTRL);
+    // Símbolos de macOS dibujados en la fuente propia (glcdfont.c, 0x01-0x04)
+    render_line(8, PSTR("  \x01  "), mods & MOD_MASK_GUI);
+    render_line(9, PSTR("  \x02  "), mods & MOD_MASK_ALT);
+    render_line(10, PSTR("  \x03  "), mods & MOD_MASK_SHIFT);
+    render_line(11, PSTR("  \x04  "), mods & MOD_MASK_CTRL);
 
-    render_line(11, PSTR("CAPS "), caps_active());
-
-    render_line(13, PSTR(" WPM "), false);
-    oled_set_cursor(1, 14);
-    oled_write(get_u8_str(get_current_wpm(), ' '), false);
+    render_line(13, PSTR("CAPS "), caps_active());
 }
 
 // Mitad derecha (128x32): Haunter animado a la izquierda, Pokédex y capa actual a la derecha.

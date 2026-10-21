@@ -37,6 +37,8 @@
 
 // --- OLED ---
 #define OLED_TIMEOUT 600000
+// Fuente propia: la de crkbd + símbolos ⌘ ⌥ ⇧ ⌃ en 0x01-0x04
+#define OLED_FONT_H "keyboards/crkbd/keymaps/sebas/glcdfont.c"
 
 // --- Ahorro de memoria ---
 #define LAYER_STATE_8BIT
